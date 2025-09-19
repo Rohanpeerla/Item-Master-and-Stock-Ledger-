@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Submitted</title>
+  <style>
+    body { font-family: Arial; padding: 30px; background: #f0f0f0; }
+    .box { background: white; padding: 20px; border-radius: 10px; max-width: 800px; margin: auto; box-shadow: 0 0 10px gray; }
+    h2 { color: green; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>✅ Purchase Order Submitted Successfully!</h2>
+    <p><strong>Supplier Name:</strong> {{ supplier_name }}</p>
+    <p><strong>Order Date:</strong> {{ order_date }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Rate</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if item1 %}
+        <tr>
+          <td>{{ item1 }}</td>
+          <td>{{ quantity1 }}</td>
+          <td>{{ rate1 }}</td>
+          <td>{{ amount1 }}</td>
+        </tr>
+        {% endif %}
+        {% if item2 %}
+        <tr>
+          <td>{{ item2 }}</td>
+          <td>{{ quantity2 }}</td>
+          <td>{{ rate2 }}</td>
+          <td>{{ amount2 }}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td><strong>{{ total }}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</body>
+</html>

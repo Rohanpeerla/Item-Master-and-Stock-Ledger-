@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Purchase Order</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f8f9fa;
+      color: #343a40;
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: 220px;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: all 0.3s ease;
+      overflow-y: auto;
+      z-index: 1001;
+    }
+    .sidebar.hidden {
+      left: -240px;
+      
+      box-shadow: none;
+    }
+    .sidebar h2 {
+      font-size: 1.2rem;
+      color: #0d6efd;
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      display: block;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      background-color: #0d6efd;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover {
+      background-color: #0b5ed7;
+    }
+    
+    .main-content {
+      margin-left: 220px;
+      padding: 100px 30px 100px;
+      flex-grow: 1;
+      width: 100%;
+      transition: margin-left 0.3s ease;
+    }
+    .main-content.full {
+      margin-left: 0;
+    }
+    
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 220px;
+      right: 0;
+      height: 60px;
+      background-color: #3b69ff;
+      border-bottom: 2px solid #343a40;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0 30px;
+      z-index: 1002;
+      box-sizing: border-box;
+      transition: left 0.3s ease;
+    }
+    .topbar.full {
+      left: 0;
+    }
+    .topbar .user-info {
+      font-size: 0.95rem;
+      color: #343a40;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .topbar .logout-btn {
+      background-color: #fd0d3d;
+      color: white;
+      padding: 6px 12px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .topbar .logout-btn:hover {
+      background-color: #0b5ed7;
+    }
+    
+    #sidebarToggle {
+      position: absolute;
+      left: 15px;
+      top: 15px;
+      font-size: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ffffff;
+      transition: color 0.3s ease;
+      z-index: 1100;
+    }
+    #sidebarToggle:hover {
+      color: #1c1d1f;
+    }
+
+   
+    .container {
+      background: #094cb1;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      background: white;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #dee2e6;
+      text-align: left;
+    }
+    th {
+      background-color: #e4e8eb;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 1rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="number"] {
+      max-width: 100px;
+    }
+    .summary {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 10px 0;
+      color: #343a40;
+    }
+    #saveBtn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-right: 20px;
+    }
+    #saveBtn:disabled {
+      background-color: #a6c8ff;
+      cursor: not-allowed;
+    }
+    #saveBtn:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+    #downloadBtn {
+      background-color: #007bff;
+      color: rgb(122, 4, 4);
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #downloadBtn:hover {
+      background-color: #0056b3;
+    }
+    footer {
+      background-color: #0d6efd;
+      color: white;
+      text-align: center;
+      padding: 15px 20px;
+      font-size: 0.9rem;
+      position: fixed;
+      bottom: 0;
+      left: 220px;
+      width: calc(100% - 220px);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+      z-index: 999;
+      transition: left 0.3s ease;
+    }
+    footer.full {
+      left: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+
+<div class="sidebar" id="sidebar">
+  <h2>Navigation</h2>
+  <a href="/sales-orders">Sales Orders</a>
+  <a href="/packages">Packages</a>
+  <a href="/invoices">Invoices</a>
+  <a href="/bills">Bills</a>
+  <a href="/integrations">Integrations</a>
+  <a href="/reports">Reports</a>
+  <a href="/contacts">Contacts</a>
+</div>
+
+
+<div class="topbar" id="topbar" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1c8eff; color: white;">
+  <div style="display: flex; align-items: center;">
+    <button id="sidebarToggle" title="Toggle Sidebar">&#9776;</button>
+    <h3 style="margin: 0; padding-left: 40px;">Purchase Order List</h3>
+  </div>
+
+  <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+    <span>Logged in as: <strong>{{ username }}</strong></span>
+    <a href="/logout" class="logout-btn btn btn-danger btn-sm" style="color: white;">Logout</a>
+  </div>
+</div>
+
+
+<div class="main-content" id="mainContent">
+  <div class="container" id="invoice">
+    <h2>Supplier Details</h2>
+    <form id="poForm" novalidate>
+      <label>
+        Supplier Name:<br />
+        <input
+          type="text"
+          id="supplierName"
+          name="supplierName"
+          required
+          pattern="^[a-zA-Z\s]+$"
+          placeholder="Enter supplier name"
+        />
+      </label>
+      <br /><br />
+      <label>
+        Address:<br />
+        <input
+          type="text"
+          id="supplierAddress"
+          name="supplierAddress"
+          required
+          placeholder="Enter supplier address"
+        />
+      </label>
+      <br /><br />
+      <label>
+        Email:<br />
+        <input
+          type="email"
+          id="supplierEmail"
+          name="supplierEmail"
+          required
+          placeholder="Enter supplier email"
+        />
+      </label>
+      <br /><br />
+      <label>
+        Phone:<br />
+        <input
+          type="tel"
+          id="supplierPhone"
+          name="supplierPhone"
+          required
+          pattern="^\d{10}$"
+          placeholder="10 digit phone number"
+        />
+      </label>
+
+      <h2>Order Item Details</h2>
+      <table id="itemTable">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Rate (₹)</th>
+            <th>Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mouse</td>
+            <td><input type="number" min="1" value="10" class="qty" required /></td>
+            <td><input type="number" min="1" value="10000" class="rate" required /></td>
+            <td class="amount"></td>
+          </tr>
+          <tr>
+            <td>Blue Star 1.5 Ton Inverter AC</td>
+            <td><input type="number" min="1" value="10" class="qty" required /></td>
+            <td><input type="number" min="1" value="40000" class="rate" required /></td>
+            <td class="amount"></td>
+          </tr>
+          <tr>
+            <td>Samsung 8k TV</td>
+            <td><input type="number" min="1" value="10" class="qty" required /></td>
+            <td><input type="number" min="1" value="50000" class="rate" required /></td>
+            <td class="amount"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Order Summary</h2>
+      <p class="summary">Total Amount: ₹<span id="totalAmount">0</span></p>
+      <p class="summary">GST (18%): ₹<span id="gst">0</span></p>
+      <p class="summary">Discount: ₹<span id="discount">2000</span></p>
+      <p class="summary">Final Bill: ₹<span id="finalAmount">0</span></p>
+
+      <button type="submit" id="saveBtn" disabled>Save Purchase Order</button>
+      <button type="button" id="downloadBtn">Download as PDF</button>
+    </form>
+  </div>
+</div>
+
+
+<footer id="footer">
+  &copy; 2025 Inventory Management System. All rights reserved.
+</footer>
+
+<script>
+  const form = document.getElementById('poForm');
+  const saveBtn = document.getElementById('saveBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const discount = 2000;
+
+ 
+  const sidebar = document.getElementById('sidebar');
+  const topbar = document.getElementById('topbar');
+  const mainContent = document.getElementById('mainContent');
+  const footer = document.getElementById('footer');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+
+  function calculateAmounts() {
+    let totalAmount = 0;
+    const rows = document.querySelectorAll("#itemTable tbody tr");
+
+    rows.forEach(row => {
+      const qtyInput = row.querySelector('.qty');
+      const rateInput = row.querySelector('.rate');
+      const amountCell = row.querySelector('.amount');
+
+      const qty = parseFloat(qtyInput.value);
+      const rate = parseFloat(rateInput.value);
+
+      if (!isNaN(qty) && !isNaN(rate)) {
+        const amount = qty * rate;
+        amountCell.textContent = amount.toFixed(2);
+        totalAmount += amount;
+      } else {
+        amountCell.textContent = '';
+      }
+    });
+
+    const gst = totalAmount * 0.18;
+    const finalBill = totalAmount + gst - discount;
+
+    document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
+    document.getElementById("gst").textContent = gst.toFixed(2);
+    document.getElementById("discount").textContent = discount.toFixed(2);
+    document.getElementById("finalAmount").textContent = finalBill.toFixed(2);
+  }
+
+  function validateForm() {
+    if (form.checkValidity()) {
+      saveBtn.disabled = false;
+    } else {
+      saveBtn.disabled = true;
+    }
+  }
+
+  function handleInputChange() {
+    calculateAmounts();
+    validateForm();
+  }
+
+  form.addEventListener('input', handleInputChange);
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      alert('Please fill all fields correctly.');
+      return;
+    }
+    alert('Purchase order saved successfully!');
+    
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const invoice = document.getElementById('invoice');
+    html2pdf().from(invoice).save('purchase_order.pdf');
+  });
+
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('full');
+    topbar.classList.toggle('full');
+    footer.classList.toggle('full');
+  });
+
+  window.onload = () => {
+    calculateAmounts();
+    validateForm();
+  };
+</script>
+
+</body>
+</html>

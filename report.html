@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 60px;
+            background-color: #135cba;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 220px;
+            background-color: #1c17a8;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none; /* Hidden by default */
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            color: #19479d;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #388e3c;
+        }
+
+        .main-content {
+            margin-left: 0;
+            flex-grow: 1;
+            width: 100%;
+            transition: margin-left 0.3s;
+        }
+
+        header {
+            background-color: #0f43a5;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .user-info {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .toggle-sidebar-btn {
+            margin-right: 10px;
+            background-color: white;
+            color: #4CAF50;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        header .logout {
+            background-color: white;
+            color: #4CAF50;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        header .logout:hover {
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: rgb(250, 240, 239);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #1235b3;
+            color: white;
+        }
+
+        tfoot td {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1441a1;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        input:invalid {
+            border-color: red;
+        }
+
+        input:valid {
+            border-color: rgb(18, 59, 161);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <h2>Navigation</h2>
+    <a href="/sales-orders">Sales Orders</a>
+    <a href="/packages">Packages</a>
+    <a href="/invoices">Invoices</a>
+    <a href="/purchase-orders">Purchase Orders</a>
+    <a href="/bills">Bills</a>
+    <a href="/integrations">Integrations</a>
+    <a href="/contacts">Contacts</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    <header>
+        <div class="user-info">
+            <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
+            Logged in as: {{ session['username'] }}
+        </div>
+        <a class="logout" href="{{ url_for('logout') }}">Logout</a>
+    </header>
+
+    <h1>Product Report</h1>
+
+    <div style="width: 90%; margin: 20px auto; background: white; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px;">
+        <form id="itemForm" method="post" action="/add-product">
+            <label>Item Name:
+                <input type="text" name="name" id="name" required pattern="[A-Za-z\s]+" />
+            </label><br><br>
+            <label>Units:
+                <input type="text" name="units" id="units" required pattern="[A-Za-z]+" />
+            </label><br><br>
+            <label>Unit Price:
+                <input type="number" name="unit_price" id="unit_price" step="0.01" required min="0.01" />
+            </label><br><br>
+            <label>Quantity:
+                <input type="number" name="quantity" id="quantity" required min="1" />
+            </label><br><br>
+            <label>Rate:
+                <input type="number" name="rate" id="rate" step="0.01" required min="0" />
+            </label><br><br>
+            <label>Total:
+                <input type="number" id="total" name="total" readonly />
+            </label><br><br>
+            <button type="submit" id="saveBtn" disabled style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px;">Save</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Units</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>Rate</th>
+                <th>Total</th>
+                <th>Sales %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set grand_total = 1325000 %}
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.units }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.rate }}</td>
+                <td>{{ item.total }}</td>
+                <td>{{ "%.2f"|format((item.total / grand_total) * 100) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5">Grand Total</td>
+                <td colspan="2">1325000.00</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <footer>
+        &copy; 2025 Inventory Management System | All Rights Reserved
+    </footer>
+</div>
+
+<script>
+function updateTotal() {
+    const unitPrice = parseFloat(document.getElementById('unit_price').value);
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const total = (!isNaN(unitPrice) && !isNaN(quantity)) ? unitPrice * quantity : 0;
+    document.getElementById('total').value = total.toFixed(2);
+    validateForm();
+}
+
+function validateForm() {
+    const form = document.getElementById('itemForm');
+    const saveBtn = document.getElementById('saveBtn');
+    if (form.checkValidity()) {
+        saveBtn.disabled = false;
+    } else {
+        saveBtn.disabled = true;
+    }
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+        sidebar.style.display = 'block';
+        mainContent.style.marginLeft = '240px';
+    } else {
+        sidebar.style.display = 'none';
+        mainContent.style.marginLeft = '0';
+    }
+}
+
+// Attach input listeners for live validation and total update
+['name', 'units', 'unit_price', 'quantity', 'rate'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+        updateTotal();
+        validateForm();
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Roles</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0c45a8;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #343a40;
+      color: white;
+      height: 100vh;
+      padding-top: 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+      padding-left: 20px;
+      color: #ccc;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background-color: #007bff;
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding: 20px;
+      flex: 1;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.full-width {
+      margin-left: 0;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+    }
+
+    .logout-btn,
+    .toggle-sidebar {
+      background-color: #343a40;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+
+    .add-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    form {
+      margin: 20px 0;
+      background: white;
+      padding: 20px;
+      max-width: 600px;
+      box-shadow: 0 0 10px #ccc;
+      border-radius: 8px;
+      display: none;
+    }
+
+    form label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    form input,
+    form select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    form button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
+
+    form button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    th,
+    td {
+      padding: 12px 20px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar" id="sidebar">
+    <h3>Inventory</h3>
+    <a href="/item-master">Item Master</a>
+    <a href="/stock_ledger">Stock Ledger</a>
+    <h3>Reports</h3>
+    <a href="/reports-overview">Reports Overview</a>
+    <a href="/sales-report">Sales Report</a>
+  </div>
+
+  <div class="main-content" id="mainContent">
+    <div class="topbar">
+      <div>
+        Logged in as: <strong>Aniran</strong>
+        <button class="toggle-sidebar" onclick="toggleSidebar()">☰ Toggle Sidebar</button>
+      </div>
+      <a href="#" class="logout-btn">Logout</a>
+    </div>
+
+    <button class="add-btn" onclick="toggleForm()">➕ Add User</button>
+
+    <form id="userForm" onsubmit="handleSubmit(event)">
+      <h2>Add User</h2>
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username"
+             required pattern="[A-Za-z][A-Za-z0-9_]{2,}"
+             title="At least 3 characters, starts with letter">
+
+      <label for="mobile">Mobile Number</label>
+      <input type="tel" id="mobile" name="mobile"
+             required pattern="^[6-9]\d{9}$"
+             title="Enter 10-digit mobile starting with 6–9">
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="role">Select Role</label>
+      <select id="role" name="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="Admin">Admin</option>
+        <option value="Manager">Manager</option>
+        <option value="User">User</option>
+      </select>
+
+      <button type="submit" id="saveBtn" disabled>Save</button>
+    </form>
+
+    <h2>User Roles List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Mobile</th>
+          <th>Email</th>
+          <th>Roles</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <tr>
+          <td>Admin</td>
+          <td>9512352579</td>
+          <td>admin.ims@gmail.com</td>
+          <td>
+            <select>
+              <option value="Admin" selected>Admin</option>
+              <option value="Manager">Manager</option>
+              <option value="User">User</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Manager</td>
+          <td>9764312578</td>
+          <td>manager.ims@gmail.com</td>
+          <td>
+            <select>
+              <option value="Admin">Admin</option>
+              <option value="Manager" selected>Manager</option>
+              <option value="User">User</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Aniran</td>
+          <td>9759025988</td>
+          <td>aniran.ims@gmail.com</td>
+          <td>
+            <select>
+              <option value="Admin">Admin</option>
+              <option value="Manager">Manager</option>
+              <option value="User" selected>User</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const form = document.getElementById('userForm');
+    const saveBtn = document.getElementById('saveBtn');
+    const userTableBody = document.getElementById('userTableBody');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+
+    function toggleForm() {
+      const display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+      form.style.display = display;
+    }
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('hidden');
+      mainContent.classList.toggle('full-width');
+    }
+
+    // Live validation + duplicate check
+    form.addEventListener('input', () => {
+      const usernameInput = form.username;
+      const mobileInput = form.mobile;
+      const emailInput = form.email;
+      const roleInput = form.role;
+
+      // Real-time duplicate check
+      const username = usernameInput.value.trim().toLowerCase();
+      const rows = userTableBody.querySelectorAll('tr');
+      let duplicate = false;
+
+      rows.forEach(row => {
+        if (row.cells[0].textContent.trim().toLowerCase() === username && username !== '') {
+          duplicate = true;
+        }
+      });
+
+      if (duplicate) {
+        alert("This username already exists!");
+        usernameInput.focus();
+        saveBtn.disabled = true;
+        return;
+      }
+
+      // Enable/disable Save button based on form validity
+      saveBtn.disabled = !form.checkValidity();
+    });
+
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const username = form.username.value.trim();
+      const mobile = form.mobile.value.trim();
+      const email = form.email.value.trim();
+      const role = form.role.value;
+
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>${username}</td>
+        <td>${mobile}</td>
+        <td>${email}</td>
+        <td>
+          <select>
+            <option value="Admin" ${role === 'Admin' ? 'selected' : ''}>Admin</option>
+            <option value="Manager" ${role === 'Manager' ? 'selected' : ''}>Manager</option>
+            <option value="User" ${role === 'User' ? 'selected' : ''}>User</option>
+          </select>
+        </td>
+      `;
+      userTableBody.appendChild(newRow);
+
+      form.reset();
+      saveBtn.disabled = true;
+      form.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

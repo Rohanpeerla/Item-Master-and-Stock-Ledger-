@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inventory Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background-color: #f4f4f4;
+    }
+    .navbar {
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .cards {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px;
+    }
+    .card {
+      width: 22%;
+      padding: 20px;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+    }
+    .pink { background: #f06292; }
+    .yellow { background: #fdd835; color: black; }
+    .blue { background: #42a5f5; }
+    .purple { background: #ab47bc; }
+
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .charts {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px;
+    }
+
+    .chart-box {
+      width: 40%;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: gray;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div><strong>Stock Management Dashboard</strong></div>
+<div>{{ current_date }} Logged in as: {{ session['username'] }} ▼</div>
+<a href="{{ url_for('logout') }}" style="color: white; margin-left: 20px; text-decoration: none;">Logout</a>
+</div>
+
+<div class="cards">
+  <div class="card pink">
+    <h2>100</h2>
+    <p>Total Stock</p>
+  </div>
+  <div class="card yellow">
+    <h2>1000000</h2>
+    <p>Total Cost</p>
+  </div>
+  <div class="card blue">
+    <h2>9</h2>
+    <p>Items Count</p>
+  </div>
+  <div class="card purple">
+    <h2>100</h2>
+    <p>Items Stock</p>
+  </div>
+</div>
+
+<div class="filters">
+  <label>From Date: <input type="date" /></label>
+  <label>To Date: <input type="date" /></label>
+  <button>Search</button>
+</div>
+
+<div class="charts">
+  <div class="chart-box">
+    <h3>Count of the Item Sales</h3>
+    <img src="{{ url_for('static', filename='images/chart1.png') }}" alt="Chart 1" width="100%" />
+    <div style="text-align: left; margin-top: 10px;">
+      <strong>Legend:</strong>
+      <ul style="list-style-type: none; padding-left: 0;">
+        <li><span style="color: blue;">🟦 Mobile Phones</span> — 40%</li>
+        <li><span style="color: green;">🟩 Televisions</span> — 25%</li>
+        <li><span style="color: yellow;">🟨 Air Conditioners</span> — 20%</li>
+        <li><span style="color: red;">🟥 Accessories</span> —5%</li>
+        <li><span style="color: orange;">Tools</span>-10%</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chart-box">
+    <h3>Count of Item by Sales in the Market</h3>
+    <img src="{{ url_for('static', filename='images/chart2.png') }}" alt="Chart 2" width="100%" />
+    <div style="text-align: left; margin-top: 10px;">
+      <strong>Legend:</strong>
+      <ul style="list-style-type: none; padding-left: 0;">
+        <li><span style="color: blue;">🟦 High Sales</span> — 50%</li>
+        <li><span style="color:green;">AverageSales</span>-15%</li>
+        <li><span style="color:purple;">Medium Sales</span>-10%</li>
+         <li><span style="color:pink;">Moderate Sales</span>-5%</li>
+          <li><span style="color:rgb(211, 211, 49);">Low Sales</span>- 20%</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Supplier ID</th>
+      <th>Supplier Name</th>
+      <th>Order Date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>PO001</td><td>Jai Balaji Suppliers</td><td>02-05-2025</td><td>Order Successful</td></tr>
+    <tr><td>PO002</td><td>Ratan Lal Suppliers</td><td>23-05-2025</td><td>Order Succcessful</td></tr>
+    <tr><td>PO003</td><td>Ram Suppliers</td><td>15-05-2025</td><td>Order Succcessful</td></tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Product Name</th>
+      <th>Quantity</th>
+      <th>Unit Cost (₹)</th>
+      <th>Total Cost (₹)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>One Plus Nord Ce 2 Lite 5g</td><td>5</td><td>20000.00</td><td>100000.00</td></tr>
+    <tr><td>Samsung 8k Tv</td><td>3</td><td>50000.00</td><td>150000.00</td></tr>
+    <tr><td>Lenovo Idea pad 3</td><td>7</td><td>40000.00</td><td>280000.00</td></tr>
+    <tr><td>Samsung Washing Machine (Front load)</td><td>4</td><td>30000.00</td><td>120000.00</td></tr>
+    <tr><td>Blue Star 1.5 Ton Inverter Ac</td><td>2</td><td>40000.00</td><td>80000.00</td></tr>
+    <tr><td>LG 1.5 Ton AC</td><td>6</td><td>30000.00</td><td>180000.00</td></tr>
+    <tr><td>LG Smart TV AC</td><td>8</td><td>30000.00</td><td>240000.00</td></tr>
+    <tr><td>Apple iPhone 12, 256 GB, Cherry Red</td><td>1</td><td>75000.00</td><td>75000.00</td></tr>
+    <tr><td>Mouse</td><td>10</td><td>100000.00</td><td>100000.00</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  &copy; 2025 Inventory System Dashboard. All Rights Reserved.
+</div>
+<a href="/logout" class="logout-btn">Logout</a>
+
+{% if session.get('role') == 'Admin' %}
+    <li><a href="/assign-role-menus">Role-Menu Assignment</a></li>
+{% endif %}
+
+
+<ul id="sidebar-menu" class="sidebar-nav"></ul>
+
+<script>
+fetch('/get_user_menus')
+  .then(res => res.json())
+  .then(data => {
+    const menuTree = buildMenuTree(data);
+    renderSidebar(menuTree);
+  });
+
+function buildMenuTree(menus) {
+  const map = {}, roots = [];
+  menus.forEach(menu => map[menu.MenuID] = {...menu, children: []});
+  menus.forEach(menu => {
+    if (menu.ParentMenuID) {
+      map[menu.ParentMenuID]?.children.push(map[menu.MenuID]);
+    } else {
+      roots.push(map[menu.MenuID]);
+    }
+  });
+  return roots;
+}
+
+function renderSidebar(menus, parent = document.getElementById('sidebar-menu')) {
+  menus.forEach(menu => {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="${menu.URL}">
+                      <i class="${menu.Icon || 'default-icon'}"></i> ${menu.MenuName}
+                    </a>`;
+
+    if (menu.children.length > 0) {
+      const ul = document.createElement('ul');
+      renderSidebar(menu.children, ul);
+      li.appendChild(ul);
+    }
+
+    parent.appendChild(li);
+  });
+}
+</script>
+
+<div class="sidebar">
+  {% for menu in user_menus %}
+    <a href="{{ menu['menu_url'] }}">{{ menu['menu_name'] }}</a>
+  {% endfor %}
+</div>
+
+<h2>Welcome {{ username }}!</h2>
+<p>Your Role: {{ role }}</p>
+
+{% if role == 'Admin' %}
+    <p>You have full access.</p>
+{% elif role == 'Manager' %}
+    <p>You have manager-level access.</p>
+{% else %}
+    <p>You are logged in as a regular user.</p>
+{% endif %}
+
+</body>
+</html>

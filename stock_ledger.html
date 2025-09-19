@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inventory Stock Ledger Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #007bff;
+      color: white;
+      padding: 0 20px;
+      height: 60px;
+      font-size: 18px;
+    }
+
+    .toggle-sidebar-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .toggle-sidebar-btn:hover {
+      color: #d1eaff;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logout-btn {
+      background-color: #e61e1e;
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover {
+      background-color: #ffffff;
+    }
+
+    .dashboard {
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #343a40;
+      color: white;
+      padding-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      text-align: left;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #444;
+      transition: background 0.3s;
+    }
+
+    .sidebar button:hover,
+    .sidebar button.active {
+      background-color: #495057;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: #e0e0e0;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    form input {
+      padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    form button {
+      padding: 8px 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    form button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    table {
+      width: 95%;
+      margin: 0 auto 20px auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .toggle-btn {
+      cursor: pointer;
+      color: #ffffff;
+      background: #e9f0ff;
+      border: 1px solid #007bff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .toggle-btn:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .nested-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .nested-table th {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .nested-table td, .nested-table th {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .history-row {
+      background-color: #fefefe;
+    }
+
+    .footer {
+      height: 40px;
+      background-color: #343a40;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 999;
+    }
+
+    .sidebar-collapsed .sidebar {
+      display: none;
+    }
+
+    .sidebar-collapsed .main-content {
+      width: 100%;
+      padding-left: 20px;
+    }
+
+    @media (max-width: 768px) {
+      table, .nested-table {
+        font-size: 12px;
+      }
+
+      .sidebar {
+        width: 100px;
+      }
+
+      .sidebar button {
+        font-size: 12px;
+        padding: 10px;
+      }
+
+      .header {
+        justify-content: flex-end;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
+  <div style="flex-grow: 1;">Inventory Stock Ledger</div>
+  <div class="user-info">
+    <span class="username">Logged in as: Admin &#9662;</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<div class="dashboard">
+  <div class="sidebar">
+    <h3>Dashboard</h3>
+    <button class="nav-btn" onclick="scrollToForm()">Add Item</button>
+    <button class="nav-btn active" onclick="loadContent('stockLedger')">Stock Ledger</button>
+    <button class="nav-btn" onclick="loadContent('totalBills')">Total Bills</button>
+    <button class="nav-btn" onclick="loadContent('billsPerMonth')">Bills Per Month</button>
+    <button class="nav-btn" onclick="loadContent('itemsSold')">Items Sold</button>
+    <button class="nav-btn" onclick="toggleSidebar()">Hide Sidebar</button>
+  </div>
+
+  <div class="main-content" id="mainContent">
+    <h2 id="addItemForm">Add New Item to Ledger</h2>
+    <form id="itemForm" onsubmit="handleSave(event)">
+      <input type="text" id="itemName" placeholder="Item Name" required pattern=".{3,}" title="Enter at least 3 characters">
+      <input type="number" id="openingBalance" placeholder="Opening Balance" required min="0">
+      <input type="number" id="currentQty" placeholder="Current Quantity" required min="0">
+      <button id="saveBtn" type="submit" disabled>Save</button>
+    </form>
+
+    <h2>Stock Ledger with History</h2>
+    <table id="stockLedgerTable">
+  <thead>
+  <tr>
+    <th>Item Name</th>
+    <th>Opening Balance</th>
+    <th>Current Quantity</th>
+    <th>Expiry Date</th>
+    <th>Stock Ledger Number</th>
+    <th>Actions</th>
+  </tr>
+</thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">© 2025 Inventory System</div>
+<script>
+  function toggleSidebar() {
+    document.body.classList.toggle("sidebar-collapsed");
+  }
+  function logout() {
+  alert("Logging out...");
+  window.location.href = "/login";
+}
+
+
+  const itemNames = {
+    1: "One Plus Nord Ce 2 Lite 5g",
+    2: "Samsung 8k Tv",
+    3: "Lenovo Idea pad 3",
+    4: "Samsung Washing Machine (Front load)",
+    5: "Blue Star 1.5 Ton Inverter Ac",
+    6: "LG 1.5 Ton AC",
+    7: "LG Smart TV AC",
+    8: "Apple iPhone 12, 256 GB, Cherry Red",
+    9: "Mouse"
+  };
+
+  const stockLedgerHistory = {
+    1: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-12-31" },
+      { date: "2025-05-10", type: "Sale", qty: -10, remarks: "Sold 10 units" }
+    ],
+    2: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-03-15" }
+    ],
+    3: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-08-20" },
+      { date: "2025-05-10", type: "Sale", qty: -90, remarks: "Sold 90 units" }
+    ],
+    4: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-11-10" }
+    ],
+    5: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-07-01" }
+    ],
+    6: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: null }
+    ],
+    7: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2026-01-30" }
+    ],
+    8: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-09-12" }
+    ],
+    9: [
+      { date: "2025-05-01", type: "Opening Balance", qty: 100, remarks: "Initial Stock", expiryDate: "2025-06-30" },
+      { date: "2025-05-10", type: "Sale", qty: -90, remarks: "Sold 90 units" }
+    ]
+  };
+
+  
+  const stockLedger = Object.entries(stockLedgerHistory).map(([id, history]) => {
+    const opening = history.find(h => h.type === "Opening Balance")?.qty || 0;
+    
+    return {
+      stockLedgerId: parseInt(id),
+      itemName: itemNames[id] || `Item ${id}`,
+      openingBalance: opening,
+      currentQty: opening,  
+      expiryDate: history.find(h => h.expiryDate)?.expiryDate || 'N/A',
+      stockLedgerNumber: `SL-${id}` 
+      
+    };  
+  });
+
+  function createHistoryTable(history) {
+    let html = `<table class="nested-table">
+      <thead><tr><th>Date</th><th>Type</th><th>Quantity</th><th>Remarks</th></tr></thead><tbody>`;
+    history.forEach(h => {
+      html += `<tr><td>${h.date}</td><td>${h.type}</td><td>${h.qty}</td><td>${h.remarks}</td></tr>`;
+    });
+    html += "</tbody></table>";
+    return html;
+  }
+
+  function renderTable() {
+    const tbody = document.querySelector("#stockLedgerTable tbody");
+    tbody.innerHTML = "";
+
+    stockLedger.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.itemName}</td>
+        <td>${item.openingBalance}</td>
+        <td>${item.currentQty}</td>
+        <td>${item.expiryDate}</td>
+        <td>${item.stockLedgerNumber}</td>
+        <td><button class="toggle-btn">Show History</button></td>`;
+      tbody.appendChild(tr);
+
+      const histTr = document.createElement("tr");
+      histTr.classList.add("history-row");
+      histTr.style.display = "none";
+      const td = document.createElement("td");
+      td.colSpan = 5; 
+      td.innerHTML = createHistoryTable(stockLedgerHistory[item.stockLedgerId]);
+      histTr.appendChild(td);
+      tbody.appendChild(histTr);
+
+      const btn = tr.querySelector(".toggle-btn");
+      btn.addEventListener("click", () => {
+        if (histTr.style.display === "none") {
+          histTr.style.display = "table-row";
+          btn.textContent = "Hide History";
+        } else {
+          histTr.style.display = "none";
+          btn.textContent = "Show History";
+        }
+      });
+    });
+  }
+
+  function handleSave(event) {
+    event.preventDefault();
+    const name = document.getElementById('itemName').value;
+    const opening = parseInt(document.getElementById('openingBalance').value);
+    const qty = parseInt(document.getElementById('currentQty').value);
+    const newId = Object.keys(stockLedgerHistory).length + 1;
+
+    stockLedgerHistory[newId] = [
+      { date: new Date().toISOString().split('T')[0], type: "Opening Balance", qty: opening, remarks: "Initial Stock" }
+    ];
+
+    stockLedger.push({
+      stockLedgerId: newId,
+      itemName: name,
+      openingBalance: opening,
+      currentQty: opening,  
+      expiryDate: 'N/A'
+    });
+
+    itemNames[newId] = name;
+    renderTable();
+    itemForm.reset();
+    saveBtn.disabled = true;
+  }
+
+  
+  document.getElementById("itemForm").addEventListener("input", () => {
+    saveBtn.disabled = !itemForm.checkValidity();
+  });
+
+  renderTable();
+</script>
+
+</body>
+</html>

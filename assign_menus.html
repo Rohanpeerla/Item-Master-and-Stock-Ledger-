@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Assign Menus to Roles</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background-color: #f9f9f9;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-right button {
+      padding: 6px 12px;
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .header-right button:hover {
+      background-color: #c9302c;
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .submenu {
+      margin-left: 20px;
+    }
+
+    .access-rights {
+      margin-left: 10px;
+    }
+
+    .access-rights label {
+      margin-right: 10px;
+    }
+
+    select {
+      margin: 10px 0 20px;
+      padding: 5px;
+    }
+
+    button.assign-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #0275d8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button.assign-btn:hover {
+      background-color: #025aa5;
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-top: 1px solid #ccc;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-right">
+      <span class="user-info">Logged in as: Rohan</span>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <h2>Assign Menus to Role</h2>
+
+  <label for="roleSelect">Select Role:</label>
+  <select id="roleSelect">
+    {% for role in roles %}
+      <option value="{{ role[0] }}">{{ role[1] }}</option>
+    {% endfor %}
+  </select>
+
+  <ul id="menuTree">
+    {% for menu in menus %}
+      {% if not menu[3] %}
+        <li>
+          <label><input type="checkbox" data-id="{{ menu[0] }}"> {{ menu[1] }}</label>
+          <span class="access-rights">
+            <label><input type="checkbox" class="perm" data-id="{{ menu[0] }}" data-type="read"> R</label>
+            <label><input type="checkbox" class="perm" data-id="{{ menu[0] }}" data-type="write"> W</label>
+            <label><input type="checkbox" class="perm" data-id="{{ menu[0] }}" data-type="delete"> D</label>
+          </span>
+          <ul class="submenu">
+            {% for submenu in menus %}
+              {% if submenu[3] == menu[0] %}
+                <li>
+                  <label><input type="checkbox" data-id="{{ submenu[0] }}"> {{ submenu[1] }}</label>
+                  <span class="access-rights">
+                    <label><input type="checkbox" class="perm" data-id="{{ submenu[0] }}" data-type="read"> R</label>
+                    <label><input type="checkbox" class="perm" data-id="{{ submenu[0] }}" data-type="write"> W</label>
+                    <label><input type="checkbox" class="perm" data-id="{{ submenu[0] }}" data-type="delete"> D</label>
+                  </span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <button class="assign-btn" onclick="submitMenus()">Assign</button>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Inventory Management System. All Rights Reserved.
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    function submitMenus() {
+      const role_id = document.getElementById('roleSelect').value;
+      const checkedMenus = document.querySelectorAll('#menuTree input[type="checkbox"]:checked:not(.perm)');
+      const menuAssignments = [];
+
+      checkedMenus.forEach(menuCheckbox => {
+        const menu_id = menuCheckbox.dataset.id;
+        const read = document.querySelector(`.perm[data-id="${menu_id}"][data-type="read"]`)?.checked || false;
+        const write = document.querySelector(`.perm[data-id="${menu_id}"][data-type="write"]`)?.checked || false;
+        const del = document.querySelector(`.perm[data-id="${menu_id}"][data-type="delete"]`)?.checked || false;
+
+        menuAssignments.push({
+          menu_id: menu_id,
+          read: read,
+          write: write,
+          delete: del
+        });
+      });
+
+      fetch('/assign_menus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role_id: role_id, menus: menuAssignments })
+      })
+      .then(response => response.json())
+      .then(data => alert(data.message))
+      .catch(error => alert("Failed to assign menus: " + error));
+    }
+
+    function logout() {
+      window.location.href = "/logout";
+    }
+  </script>
+
+</body>
+</html>

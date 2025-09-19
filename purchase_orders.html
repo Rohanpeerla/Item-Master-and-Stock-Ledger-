@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Orders</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      height: 100vh;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .sidebar a {
+      display: block;
+      margin-bottom: 12px;
+      text-decoration: none;
+      color: #fff;
+      background-color: #007bff;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .sidebar a:hover {
+      background-color: #0056b3;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+      flex-grow: 1;
+      padding-bottom: 100px; /* for footer space */
+    }
+
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+
+    footer {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      position: fixed;
+      bottom: 0;
+      left: 220px;
+      width: calc(100% - 220px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>Navigation</h2>
+  <a href="/sales-orders">Sales Orders</a>
+  <a href="/packages">Packages</a>
+  <a href="/invoices">Invoices</a>
+  <a href="/bills">Bills</a>
+  <a href="/integrations">Integrations</a>
+  <a href="/reports">Reports</a>
+  <a href="/contacts">Contacts</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <h1>Purchase Orders</h1>
+
+  {% if purchase_orders %}
+    <table>
+      <thead>
+        <tr>
+          <th>PO Number</th>
+          <th>Supplier</th>
+          <th>Order Date</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in purchase_orders %}
+          <tr>
+            <td>{{ order.po_number }}</td>
+            <td>{{ order.supplier_name }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.total_amount }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No purchase orders found.</p>
+  {% endif %}
+</div>
+
+<!-- Footer -->
+<footer>
+  &copy; 2025 Inventory Management System. All rights reserved.
+</footer>
+
+</body>
+</html>

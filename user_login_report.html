@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Login/Logout Report</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">    
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #073cb8;
+      color: white;
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .header, .footer {
+      background-color: #1c80e3;
+      color: rgb(255, 255, 255);
+      padding: 15px 20px;
+    }
+
+    .footer {
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .sidebar {
+      height: calc(100vh - 56px);
+      background-color: #343a40;
+      color: white;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      width: 0;
+      overflow: hidden;
+      padding: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    body.sidebar-expanded .sidebar {
+      width: 220px;
+      padding-top: 20px;
+      overflow: auto;
+    }
+
+    .sidebar a {
+      color: white;
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+
+    .main-content {
+      margin-left: 0;
+      padding: 20px;
+      min-height: calc(100vh - 112px);
+      background-color: #073cb8;
+      transition: all 0.3s ease;
+    }
+
+    body.sidebar-expanded .main-content {
+      margin-left: 220px;
+    }
+
+    .toggle-btn {
+      background-color: #343a40;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 18px;
+      position: absolute;
+      top: 60px;
+      left: 10px;
+      z-index: 1001;
+    }
+    .toggle-btn-header {
+  background: none;
+  border: none;
+  color: rgb(255, 255, 255);
+  font-size: 22px;
+  padding: 5px 10px;
+  cursor: pointer;
+  outline: none;
+}
+
+.toggle-btn-header:hover {
+  color: #d1eaff;
+}
+
+
+  </style>
+</head>
+<body class="sidebar-expanded">
+
+ <div class="header d-flex justify-content-between align-items-center">
+  <div class="d-flex align-items-center">
+    <button class="btn toggle-btn-header mr-3" onclick="toggleSidebar()">☰</button>
+    <h4 class="mb-0">User Login Logout Report</h4>
+  </div>
+    <div class="d-flex align-items-center">
+    {% if session.get('username') %}
+    <span class="mr-3 font-weight-bold" style="color: black;">Logged in as: {{ session['username'] }}</span>
+
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+  </div>
+</div>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('report') }}">Report</a>
+    <a href="{{ url_for('stock_ledger') }}">Stock Ledger</a>
+    <a href="{{ url_for('bills') }}">Bills</a>
+    <a href="{{ url_for('purchase_orders') }}">Purchase Order Report</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <div class="container-fluid">
+      <h2 class="mb-4">User Login/Logout Report</h2>
+
+      <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th>Username</th>
+            <th>Login Time</th>
+            <th>Logout Time</th>
+            <th>Total Duration (HH:MM:SS)</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if data %}
+            {% for row in data %}
+            <tr>
+              <td>{{ row.username }}</td>
+              <td>{{ row.login_time.strftime('%Y-%m-%d %I:%M %p') if row.login_time else 'N/A' }}</td>
+              <td>{{ row.logout_time.strftime('%Y-%m-%d %I:%M %p') if row.logout_time else 'Active Session' }}</td>
+              <td>{{ row.formatted_login_time }}</td>
+              <td>{{ row.role }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center text-muted">No login records found.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>&copy; {{ current_year }} 2025 Inventory Management System. All rights reserved.</p>
+  </div>
+
+  <!-- Toggle Script -->
+  <script>
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-expanded');
+    }
+  </script>
+
+  <!-- Bootstrap Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>    
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>    
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pipes</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1417ca;
+      padding: 40px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .pipe-output {
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-left: 5px solid #007bff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<h2>Pipes</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Raw Name</th>
+      <th>Title Case</th>
+      <th>Uppercase</th>
+      <th>Lowercase</th>
+      <th>Short Name</th>
+      <th>Price</th>
+      <th>Currency</th>
+      <th>Date</th>
+      <th>Formatted Date</th>
+      <th>Sale Info</th>
+    </tr>
+  </thead>
+  <tbody id="itemTableBody"></tbody>
+</table>
+
+<div class="pipe-output">
+  <h3>Formatted Output</h3>
+  <ul id="formattedOutput"></ul>
+</div>
+
+<script>
+  // Sample Data
+  const items = [
+    { name: "One Plus Nord Ce 2 Lite 5g", price: 20000, date:"2025-05-05T12:30:00Z", discount: 5 },
+    { name: "Apple iphone 12", price: 75000, date: "2025-05-10T09:00:00Z", discount: 10 },
+    { name: "Samsung washing machine", price: 30000, date: "2025-05-11T12:30:00Z", discount: 15 },
+    { name: "Lenovo idea pad 3", price: 40000, date: "2025-05-12T15:45:00Z", discount: 20 },
+    { name: "Blue Star 1.5 Ton Inverter AC", price: 40000, date: "2025-05-15T12:30:00Z", discount: 10 },
+    { name: "LG 1.5 Ton AC", price: 40000, date: "2025-05-15T11:30:00Z", discount: 5 },
+    { name: "Samsung 8k TV", price: 50000, date: "2025-05-15T12:30:00Z", discount: 25 },
+    { name: "Mouse", price: 10000, date: "2025-05-13T11:30:00Z", discount: 10 },
+    { name: "Keyboard", price: 15000, date: "2025-05-20T12:30:00Z", discount: 15 },
+  ];
+
+  // Built-in Pipes
+  function uppercase(value) {
+    return value ? value.toString().toUpperCase() : '';
+  }
+
+  function lowercase(value) {
+    return value ? value.toString().toLowerCase() : '';
+  }
+
+  function titlecase(value) {
+    return value.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+  }
+
+  function currency(value) {
+    return `₹${parseFloat(value).toLocaleString('en-IN')}`;
+  }
+
+  function formatDate(value) {
+    const d = new Date(value);
+    return d.toLocaleDateString('en-IN');
+  }
+
+  function truncate(value, length = 10) {
+    return value.length > length ? value.slice(0, length) + '...' : value;
+  }
+
+  function replaceAll(value, search, replacement) {
+    return value.replace(new RegExp(search, 'g'), replacement);
+  }
+
+  function percent(value, total = 100) {
+    return `${((value / total) * 100).toFixed(2)}% off`;
+  }
+
+  // Pipe Chainer Function
+  function pipe(value, ...funcs) {
+    return funcs.reduce((acc, func) => {
+      if (Array.isArray(func)) {
+        const [fn, ...args] = func;
+        return fn(acc, ...args);
+      } else {
+        return func(acc);
+      }
+    }, value);
+  }
+
+  // Render Table
+  function renderItems() {
+    const tbody = document.getElementById("itemTableBody");
+    const outputList = document.getElementById("formattedOutput");
+    tbody.innerHTML = "";
+    outputList.innerHTML = "";
+
+    items.forEach(item => {
+      const formattedNameTitle = pipe(item.name, titlecase);
+      const formattedNameUpper = pipe(item.name, uppercase);
+      const formattedNameLower = pipe(item.name, lowercase);
+      const shortName = pipe(item.name, [truncate, 10]);
+      const formattedPrice = pipe(item.price, currency);
+      const formattedDate = pipe(item.date, formatDate);
+      const saleInfo = pipe(item.discount, [percent, 100]);
+
+      // Add to table
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.name}</td>
+        <td>${formattedNameTitle}</td>
+        <td>${formattedNameUpper}</td>
+        <td>${formattedNameLower}</td>
+        <td>${shortName}</td>
+        <td>${item.price}</td>
+        <td>${formattedPrice}</td>
+        <td>${item.date}</td>
+        <td>${formattedDate}</td>
+        <td>${saleInfo}</td>
+      `;
+      tbody.appendChild(row);
+
+      // Add to formatted output
+      const li = document.createElement("li");
+      li.textContent = `${shortName} - ${formattedNameTitle}, ${formattedPrice}, ${saleInfo} on ${formattedDate}`;
+      outputList.appendChild(li);
+    });
+  }
+
+  window.onload = () => {
+    renderItems();
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bills</title>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #11418e, #063361);
+      color: #333;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar h2 {
+      font-size: 1.2rem;
+      color: #dc3545;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      background-color: #dc3545;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #a71d2a;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 40px 20px;
+    }
+
+    header {
+      border-bottom: 2px solid #dc3545;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #dc3545;
+      margin-top: 0;
+    }
+
+    h2 {
+      margin-top: 30px;
+      color: #444;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    table.dataTable thead th {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    p {
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>Navigation</h2>
+  <a href="/item-groups">Item Groups</a>
+  <a href="/sales-orders">Sales Orders</a>
+  <a href="/packages">Packages</a>
+  <a href="/invoices">Invoices</a>
+  <a href="/purchase-orders">Purchase Orders</a>
+  <a href="/integrations">Integrations</a>
+  <a href="/reports">Reports</a>
+  <a href="/contacts">Contacts</a>
+</div>
+
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <header><h1>Bills</h1></header>
+      <p>All bills and payment information related to purchases and expenses are listed here.</p>
+
+      <section>
+        <h2>Recent Bills</h2>
+        <table id="billsTable" class="display nowrap" style="width:100%">
+          <thead>
+            <tr>
+              <th>Bill Number</th>
+              <th>Status</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>9001</td><td>Paid</td><td>100000</td><td>2025-05-29</td></tr>
+            <tr><td>9002</td><td>Unpaid</td><td>500000</td><td>2025-05-30</td></tr>
+            <tr><td>9003</td><td>Partial Payment</td><td>400000</td><td>2025-05-31</td></tr>
+            <tr><td>9004</td><td>Paid</td><td>500000</td><td>2025-06-01</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <!-- jQuery and DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <!-- DataTables Buttons Plugin -->
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('#billsTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: ['copy', 'excel', 'pdf', 'print']
+      });
+    });
+  </script>
+</body>
+</html>

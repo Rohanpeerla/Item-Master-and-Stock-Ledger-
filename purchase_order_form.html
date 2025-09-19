@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Purchase Order Form</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1328b0;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #343a40;
+      height: 100vh;
+      padding-top: 30px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: none; 
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+
+    .main {
+      margin-left: 0; 
+      padding: 30px;
+      flex: 1;
+      width: 100%;
+      transition: margin-left 0.3s ease;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 900px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 7px;
+      font-size: 14px;
+    }
+
+    .btn {
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+      border: none;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+    }
+
+    button:disabled {
+      background-color: #6c757d !important;
+      cursor: not-allowed;
+    }
+
+    #toggleSidebarBtn {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      z-index: 1000;
+      background-color: #343a40;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+      border-radius: 0 5px 5px 0;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+      transition: background-color 0.2s ease;
+      width: 35px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #toggleSidebarBtn:hover {
+      background-color: #495057;
+    }
+
+    .success-message {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    #orderList {
+      margin-top: 30px;
+    }
+
+    #orderList div {
+      background: #f8f9fa;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<button id="toggleSidebarBtn" aria-label="Toggle Sidebar">☰</button>
+
+<div class="sidebar" aria-label="Sidebar Navigation">
+  <a href="/dashboard">Dashboard</a>
+  <a href="/purchase-orders">Purchase Orders</a>
+  <a href="/new-order">New Order</a>
+  <a href="/items">Items</a>
+</div>
+
+<div class="main">
+  <div class="container">
+    <h2>Purchase Order Form</h2>
+
+    <form id="orderForm" novalidate>
+      <div class="row">
+        <div>
+          <label for="supplierName">Supplier Name</label>
+          <input 
+            type="text" 
+            id="supplierName" 
+            name="supplierName" 
+            required 
+            pattern=".{3,}" 
+            title="Supplier name should be at least 3 characters"
+          >
+        </div>
+        <div>
+          <label for="orderDate">Order Date</label>
+          <input type="date" id="orderDate" name="orderDate" required>
+        </div>
+      </div>
+
+      
+      <div class="row">
+        <div>
+          <label for="item1">Item</label>
+          <select id="item1" name="item1" required>
+            <option value="">Select Item</option>
+            <option value="One plus nord ce 2 lite 5g">One plus nord ce 2 lite 5g</option>
+            <option value="Samsung 8k TV">Samsung 8k TV</option>
+            <option value="Lenovo Idea Pad 3">Lenovo Idea Pad 3</option>
+            <option value="Samsung Washing Machine">Samsung Washing Machine (Front Load)</option>
+            <option value="Blue Star AC">Blue Star 1.5 Ton Inverter AC</option>
+            <option value="LG AC">LG 1.5 Ton AC</option>
+            <option value="LG Smart TV">LG Smart TV</option>
+            <option value="Iphone 12">Apple Iphone 12 256gb, Cherry Red</option>
+            <option value="Mouse">Mouse</option>
+          </select>
+        </div>
+        <div>
+          <label for="quantity1">Quantity</label>
+          <input 
+            type="number" 
+            id="quantity1" 
+            name="quantity1" 
+            min="1" 
+            required
+            pattern="^[1-9]\d*$" 
+            title="Quantity must be a positive integer"
+          >
+        </div>
+        <div>
+          <label for="rate1">Rate</label>
+          <input 
+            type="number" 
+            id="rate1" 
+            name="rate1" 
+            min="0" 
+            step="0.01" 
+            required
+            pattern="^\d+(\.\d{1,2})?$" 
+            title="Rate must be a positive number with up to 2 decimals"
+          >
+        </div>
+        <div>
+          <label for="amount1">Amount</label>
+          <input type="number" id="amount1" name="amount1" readonly placeholder="Auto-calc" />
+        </div>
+      </div>
+
+     
+      <div class="row">
+        <div>
+          <label for="item2">Item</label>
+          <select id="item2" name="item2">
+            <option value="">Select Item</option>
+            <option value="One plus nord ce 2 lite 5g">One plus nord ce 2 lite 5g</option>
+            <option value="Samsung 8k TV">Samsung 8k TV</option>
+            <option value="Lenovo Idea Pad 3">Lenovo Idea Pad 3</option>
+            <option value="Samsung Washing Machine">Samsung Washing Machine (Front Load)</option>
+            <option value="Blue Star AC">Blue Star 1.5 Ton Inverter AC</option>
+            <option value="LG AC">LG 1.5 Ton AC</option>
+            <option value="LG Smart TV">LG Smart TV</option>
+            <option value="Iphone 12">Apple Iphone 12 256gb, Cherry Red</option>
+            <option value="Mouse">Mouse</option>
+          </select>
+        </div>
+        <div>
+          <label for="quantity2">Quantity</label>
+          <input 
+            type="number" 
+            id="quantity2" 
+            name="quantity2" 
+            min="1"
+            pattern="^[1-9]\d*$"
+            title="Quantity must be a positive integer"
+          >
+        </div>
+        <div>
+          <label for="rate2">Rate</label>
+          <input 
+            type="number" 
+            id="rate2" 
+            name="rate2" 
+            min="0" 
+            step="0.01"
+            pattern="^\d+(\.\d{1,2})?$" 
+            title="Rate must be a positive number with up to 2 decimals"
+          >
+        </div>
+        <div>
+          <label for="amount2">Amount</label>
+          <input type="number" id="amount2" name="amount2" readonly placeholder="Auto-calc" />
+        </div>
+      </div>
+
+      
+      <div class="row">
+        <div>
+          <label for="totalAmount">Total Amount</label>
+          <input type="number" id="totalAmount" name="totalAmount" readonly placeholder="Auto-calc" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div><button type="submit" class="btn btn-success" id="submitBtn" disabled>Submit Purchase Order</button></div>
+        <div><button type="button" class="btn btn-danger" onclick="downloadPDF()">Download as PDF</button></div>
+      </div>
+
+      <div class="success-message" id="successMessage" style="display:none;">
+        Purchase Order saved successfully!
+      </div>
+    </form>
+
+ 
+    <div id="orderList"></div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('orderForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const sidebar = document.querySelector('.sidebar');
+  const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+  const mainContent = document.querySelector('.main');
+
+  
+  toggleSidebarBtn.addEventListener('click', () => {
+    if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+      sidebar.style.display = 'flex';
+      toggleSidebarBtn.textContent = '×';
+      mainContent.style.marginLeft = '220px';
+    } else {
+      sidebar.style.display = 'none';
+      toggleSidebarBtn.textContent = '☰';
+      mainContent.style.marginLeft = '0';
+    }
+  });
+
+  function calculateAmounts() {
+    let total = 0;
+
+    let qty1 = parseFloat(document.getElementById('quantity1').value) || 0;
+    let rate1 = parseFloat(document.getElementById('rate1').value) || 0;
+    let amount1 = qty1 * rate1;
+    document.getElementById('amount1').value = qty1 > 0 && rate1 > 0 ? amount1.toFixed(2) : '';
+    total += amount1;
+
+    let qty2 = parseFloat(document.getElementById('quantity2').value) || 0;
+    let rate2 = parseFloat(document.getElementById('rate2').value) || 0;
+    let amount2 = qty2 * rate2;
+    document.getElementById('amount2').value = qty2 > 0 && rate2 > 0 ? amount2.toFixed(2) : '';
+    total += amount2;
+
+    document.getElementById('totalAmount').value = total.toFixed(2);
+  }
+
+  ['quantity1', 'rate1', 'quantity2', 'rate2'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      calculateAmounts();
+      validateForm();
+    });
+  });
+
+  ['supplierName', 'orderDate', 'item1', 'quantity1', 'rate1'].forEach(id => {
+    document.getElementById(id).addEventListener('input', validateForm);
+  });
+
+  
+  function validateForm() {
+    if (form.checkValidity()) {
+      submitBtn.disabled = false;
+    } else {
+      submitBtn.disabled = true;
+    }
+  }
+
+  function saveOrder() {
+    const order = {
+      supplierName: document.getElementById('supplierName').value,
+      orderDate: document.getElementById('orderDate').value,
+      items: [
+        {
+          item: document.getElementById('item1').value,
+          quantity: document.getElementById('quantity1').value,
+          rate: document.getElementById('rate1').value,
+          amount: document.getElementById('amount1').value
+        },
+        {
+          item: document.getElementById('item2').value,
+          quantity: document.getElementById('quantity2').value,
+          rate: document.getElementById('rate2').value,
+          amount: document.getElementById('amount2').value
+        }
+      ],
+      totalAmount: document.getElementById('totalAmount').value
+    };
+
+    let orders = JSON.parse(localStorage.getItem('purchaseOrders')) || [];
+    orders.push(order);
+    localStorage.setItem('purchaseOrders', JSON.stringify(orders));
+  }
+
+  function showSavedOrders() {
+    const orders = JSON.parse(localStorage.getItem('purchaseOrders')) || [];
+    const orderList = document.getElementById('orderList');
+    orderList.innerHTML = '';
+
+    if (orders.length === 0) {
+      orderList.innerHTML = '<p>No purchase orders available.</p>';
+      return;
+    }
+
+    orders.forEach((order, index) => {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <strong>Order #${index + 1}</strong><br>
+        Supplier: ${order.supplierName}<br>
+        Date: ${order.orderDate}<br>
+        Item 1: ${order.items[0].item || '-'} - ${order.items[0].quantity || '-'} × ${order.items[0].rate || '-'} = ₹${order.items[0].amount || '0'}<br>
+        Item 2: ${order.items[1].item || '-'} - ${order.items[1].quantity || '-'} × ${order.items[1].rate || '-'} = ₹${order.items[1].amount || '0'}<br>
+        <strong>Total: ₹${order.totalAmount}</strong>
+      `;
+      orderList.appendChild(div);
+    });
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    saveOrder();
+    showSavedOrders();
+    form.reset();
+    calculateAmounts();
+    validateForm();
+    document.getElementById('successMessage').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('successMessage').style.display = 'none';
+    }, 4000);
+  });
+
+  function downloadPDF() {
+    window.print();
+  }
+
+  
+  calculateAmounts();
+  showSavedOrders();
+  validateForm();
+</script>
+
+</body>
+</html>
